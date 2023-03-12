@@ -59,43 +59,43 @@ jobs:
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_DEV} --delete
             fi
 
-deploy-to-aws-cloudfront:
-    docker:
-      - image: circleci/node:13.12.0
-    working_directory: ~/repo
-    steps:
-      - checkout
-      - run:
-          name: Show current branch
-          command: echo ${CURRENT_BRANCH}
-      - run:
-          name: Installing AWS CLI
-          working_directory: /
-          command: |
-            sudo apt-get -y -qq update
-            sudo apt-get install -y awscli
-            sudo apt-get install -y python-pip python-dev build-essential
-      - run:
-          name: Build Project
-          command: |
-            npm install
-            npm run build
-            cd build
-            zip ../build.zip -r * .[^.]*
-            echo "Build successful"
-      - run:
-          name: Deploy to AWS Cloudfront
-          command: |
-            aws configure set preview.cloudfront
-            if [ "${CURRENT_BRANCH}" == "main" ]
-            then
-              aws cloudfront create-invalidation --distribution-id ${PRODUCTION_DISTRIBUTION_ID} --paths /\*
-            elif [ "${CURRENT_BRANCH}" == "staging" ]
-            then
-              aws cloudfront create-invalidation --distribution-id ${STAGING_DISTRIBUTION_ID} --paths /\*
-            else
-              aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
-            fi
+  deploy-to-aws-cloudfront:
+      docker:
+        - image: circleci/node:13.12.0
+      working_directory: ~/repo
+      steps:
+        - checkout
+        - run:
+            name: Show current branch
+            command: echo ${CURRENT_BRANCH}
+        - run:
+            name: Installing AWS CLI
+            working_directory: /
+            command: |
+              sudo apt-get -y -qq update
+              sudo apt-get install -y awscli
+              sudo apt-get install -y python-pip python-dev build-essential
+        - run:
+            name: Build Project
+            command: |
+              npm install
+              npm run build
+              cd build
+              zip ../build.zip -r * .[^.]*
+              echo "Build successful"
+        - run:
+            name: Deploy to AWS Cloudfront
+            command: |
+              aws configure set preview.cloudfront
+              if [ "${CURRENT_BRANCH}" == "main" ]
+              then
+                aws cloudfront create-invalidation --distribution-id ${PRODUCTION_DISTRIBUTION_ID} --paths /\*
+              elif [ "${CURRENT_BRANCH}" == "staging" ]
+              then
+                aws cloudfront create-invalidation --distribution-id ${STAGING_DISTRIBUTION_ID} --paths /\*
+              else
+                aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
+              fi
 
 workflows:
   build_and_deploy:
@@ -104,7 +104,7 @@ workflows:
       - deploy-to-aws-s3:
           requires:
             - build
-          filter:
+          filters:
             branches:
               only:
                 - develop
@@ -113,7 +113,7 @@ workflows:
       - deploy-to-aws-cloudfront:
           requires:
             - deploy-to-aws-s3
-          filter:
+          filters:
             branches:
               only:
                 - develop
