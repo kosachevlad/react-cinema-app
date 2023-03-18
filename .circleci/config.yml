@@ -2,7 +2,7 @@ version: 2.1
 executors:
   app-executor:
     docker:
-      - image: circleci/node:14.19.0
+      - image: circleci/node:14.20.0
     working_directory: ~/repo
 
 aliases:
