@@ -1,6 +1,6 @@
 import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
 
-const reportWebVitals = onPerfEntry => {
+const reportWebVitals = (onPerfEntry) => {
   if (onPerfEntry) {
     onCLS(onPerfEntry);
     onFID(onPerfEntry);
