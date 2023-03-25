@@ -1,9 +1,15 @@
+orbs:
+  telegram: pkb/telegram-orb@0.1.0
 version: 2.1
 executors:
   app-executor:
     docker:
       - image: circleci/node:16.10.0
     working_directory: ~/repo
+  telegram-executor:
+    docker:
+      - image: 'cimg/node:16.11.1'
+    resource_class: small
 
 aliases:
   - &show-current-branch-name
@@ -113,6 +119,12 @@ jobs:
                 aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
               fi
 
+  notify-via-telegram:
+    steps:
+      - telegram-orb/notification:
+          groupid: '+t22eM8eISQ40Y2Fi'
+          message: 'Your custom message, default is NIL.'
+ 
 workflows:
   build_and_deploy:
     jobs:
@@ -135,19 +147,28 @@ workflows:
                 - develop
                 - staging
                 - main
-      - deploy-to-aws-s3:
+      # - deploy-to-aws-s3:
+      #     requires:
+      #       - linting
+      #       - prettier
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - main
+      # - deploy-to-aws-cloudfront:
+      #     requires:
+      #       - deploy-to-aws-s3
+      #     filters:
+      #       branches:
+      #         only:
+      #           - develop
+      #           - staging
+      #           - main
+      - notify-via-telegram:
           requires:
-            - linting
-            - prettier
-          filters:
-            branches:
-              only:
-                - develop
-                - staging
-                - main
-      - deploy-to-aws-cloudfront:
-          requires:
-            - deploy-to-aws-s3
+            - deploy-to-aws-prettier
           filters:
             branches:
               only:
