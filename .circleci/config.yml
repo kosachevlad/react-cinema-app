@@ -120,10 +120,14 @@ jobs:
               fi
 
   notify-via-telegram:
-    steps:
-      - telegram-orb/notification:
-          groupid: '+t22eM8eISQ40Y2Fi'
-          message: 'Your custom message, default is NIL.'
+      steps:
+        - telegram-orb/notification:
+            groupid: '+t22eM8eISQ40Y2Fi'
+            message: 'Your custom message, default is NIL.'
+        - checkout
+        - run: exit 0
+        - telegram-orb/status:
+            fail_only: false
  
 workflows:
   build_and_deploy:
