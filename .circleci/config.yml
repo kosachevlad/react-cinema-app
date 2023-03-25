@@ -175,7 +175,7 @@ workflows:
       #           - main
       - notify-via-telegram:
           requires:
-            - deploy-to-aws-prettier
+            - prettier
           filters:
             branches:
               only:
