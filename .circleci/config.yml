@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  telegram: pkb/telegram-orb@0.1.0
+  telegram-orb: pkb/telegram-orb@0.1.0
 
 executors:
   app-executor:
