@@ -4,7 +4,7 @@ orbs:
   telegram: pkb/telegram-orb@0.1.0
 
 executors:
-  app-§executor:
+  app-executor:
     docker:
       - image: circleci/node:16.10.0
     working_directory: ~/repo
