@@ -125,11 +125,9 @@ jobs:
               https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
               -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
               -d "text=Your build on ${CIRCLE_BRANCH} branch has completed!
-                  ```
                   author: ${CIRCLE_PROJECT_USERNAME}
                   project: $CIRCLE_PROJECT_REPONAME"
                   when: $(date +'%m/%d/%Y %T')
-                  ```
                 "
   notify-failure-via-telegram:
       executor: app-executor
