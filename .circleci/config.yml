@@ -190,18 +190,18 @@ workflows:
                 - staging
                 - main
       - notify-success-via-telegram:
-          when: on_success
           requires: []
           filters:
+            when: on_success
             branches:
               only:
                 - develop
                 - staging
                 - main
       - notify-failure-via-telegram:
-          when: on_failure
           requires: []
           filters:
+            when: on_failure
             branches:
               only:
                 - develop
