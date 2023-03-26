@@ -188,6 +188,8 @@ workflows:
                 - staging
                 - main
       - notify-success-via-telegram:
+          requires:
+            - deploy-to-aws-cloudfront
           filters:
             branches:
               only:
