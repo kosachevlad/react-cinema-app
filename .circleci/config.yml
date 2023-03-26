@@ -1,17 +1,10 @@
 version: 2.1
 
-orbs:
-  telegram-orb: pkb/telegram-orb@0.1.0
-
 executors:
   app-executor:
     docker:
       - image: circleci/node:16.10.0
     working_directory: ~/repo
-  telegram-executor:
-    docker:
-      - image: 'cimg/node:16.11.1'
-    resource_class: small
 
 aliases:
   - &show-current-branch-name
@@ -122,15 +115,15 @@ jobs:
               fi
 
   notify-via-telegram:
-    executor: telegram-executor
-    steps:
-      - telegram-orb/notification:
-          groupid: '+t22eM8eISQ40Y2Fi'
-          message: 'Your custom message, default is NIL.'
-      - checkout
-      - run: exit 0
-      - telegram-orb/status:
-          fail_only: false
+    executor: app-executor
+    run:
+        name: Notify via telegram
+        command: |
+          curl -X POST \
+          https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}
+/sendMessage \
+          -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
+          -d "text=Your build has completed! "
  
 workflows:
   build_and_deploy:
