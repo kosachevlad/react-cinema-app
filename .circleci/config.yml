@@ -188,8 +188,7 @@ workflows:
                 - staging
                 - main
       - notify-success-via-telegram:
-          requires:
-            - deploy-to-aws-cloudfront
+          requires: [build, linting, prettier, deploy-to-aws-s3, deploy-to-aws-cloudfront]
           filters:
             branches:
               only:
