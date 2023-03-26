@@ -115,18 +115,37 @@ jobs:
                 aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
               fi
 
-  notify-via-telegram:
+  notify-success-via-telegram:
       executor: app-executor
       steps:
         - run:
-            name: Notify via telegram
+            name: Notify success via telegram
             command: |
               curl -X POST \
               https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
               -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
-              -d "text=Your build on ${CIRCLE_BRANCH} has completed! \n
-                  author: ${CIRCLE_PROJECT_USERNAME} \n
-                  *When*:\n$(date +'%m/%d/%Y %T') \n
+              -d "text=Your build on ${CIRCLE_BRANCH} branch has completed!
+                  ```
+                  author: ${CIRCLE_PROJECT_USERNAME}
+                  project: $CIRCLE_PROJECT_REPONAME"
+                  when: $(date +'%m/%d/%Y %T')
+                  ```
+                "
+  notify-failure-via-telegram:
+      executor: app-executor
+      steps:
+        - run:
+            name: Notify failure via telegram
+            command: |
+              curl -X POST \
+              https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
+              -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
+              -d "text=Your build on ${CIRCLE_BRANCH} branch has failed!
+                  ```
+                  author: ${CIRCLE_PROJECT_USERNAME}
+                  project: $CIRCLE_PROJECT_REPONAME"
+                  when: $(date +'%m/%d/%Y %T')
+                  ```
                 "
  
 workflows:
@@ -170,7 +189,17 @@ workflows:
                 - develop
                 - staging
                 - main
-      - notify-via-telegram:
+      - notify-success-via-telegram:
+          when: on_success
+          requires: []
+          filters:
+            branches:
+              only:
+                - develop
+                - staging
+                - main
+      - notify-failure-via-telegram:
+          when: on_failure
           requires: []
           filters:
             branches:
