@@ -148,7 +148,7 @@ jobs:
                   project: $CIRCLE_PROJECT_REPONAME
                   when: $(date +'%m/%d/%Y %T')
                 "
-            when: on_failure
+            when: on_fail
  
 workflows:
   build_and_deploy:
