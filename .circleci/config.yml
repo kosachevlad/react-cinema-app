@@ -23,7 +23,7 @@ aliases:
   - &install-dependencies
     run:
       name: Install dependencies
-      command: nrm install
+      command: npm install
   - &save-cache
     save_cache:
       paths:
