@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  telegram-orb: uniqueck/telegram-orb@0.0.1
-
 executors:
   app-executor:
     docker:
