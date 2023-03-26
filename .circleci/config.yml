@@ -23,7 +23,7 @@ aliases:
   - &install-dependencies
     run:
       name: Install dependencies
-      command: nrm install
+      command: npm install
   - &save-cache
     save_cache:
       paths:
@@ -46,6 +46,19 @@ aliases:
         cd build
         zip ../build.zip -r * .[^.]*
         echo "Build successful"
+  - &notify-on-fail
+    run:
+      name: Notify fail via telegram
+      command: |
+        curl -X POST \
+        https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
+        -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
+        -d "text=Your build on ${CIRCLE_BRANCH} branch has fail!
+            author: ${CIRCLE_PROJECT_USERNAME}
+            project: $CIRCLE_PROJECT_REPONAME
+            when: $(date +'%m/%d/%Y %T')
+          "
+      when: on_fail
 
 jobs:
   build:
@@ -56,18 +69,7 @@ jobs:
       - *restore-cache
       - *install-dependencies
       - *save-cache
-      - run:
-            name: Notify fail via telegram
-            command: |
-              curl -X POST \
-              https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
-              -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
-              -d "text=Your build on ${CIRCLE_BRANCH} branch has fail!
-                  author: ${CIRCLE_PROJECT_USERNAME}
-                  project: $CIRCLE_PROJECT_REPONAME
-                  when: $(date +'%m/%d/%Y %T')
-                "
-            when: on_fail
+      - *notify-on-fail
 
   linting:
     executor: app-executor
@@ -78,18 +80,7 @@ jobs:
       - run:
           name: Run linting
           command: npm run lint
-      - run:
-            name: Notify fail via telegram
-            command: |
-              curl -X POST \
-              https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
-              -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
-              -d "text=Your build on ${CIRCLE_BRANCH} branch has fail!
-                  author: ${CIRCLE_PROJECT_USERNAME}
-                  project: $CIRCLE_PROJECT_REPONAME
-                  when: $(date +'%m/%d/%Y %T')
-                "
-            when: on_fail
+      - *notify-on-fail
 
   prettier:
     executor: app-executor
@@ -100,18 +91,7 @@ jobs:
       - run:
           name: Run prettier check
           command: npm run prettier:check
-      - run:
-            name: Notify fail via telegram
-            command: |
-              curl -X POST \
-              https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
-              -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
-              -d "text=Your build on ${CIRCLE_BRANCH} branch has fail!
-                  author: ${CIRCLE_PROJECT_USERNAME}
-                  project: $CIRCLE_PROJECT_REPONAME
-                  when: $(date +'%m/%d/%Y %T')
-                "
-            when: on_fail
+      - *notify-on-fail
 
   deploy-to-aws-s3:
     executor: app-executor
@@ -132,18 +112,7 @@ jobs:
             else
               aws --region ${AWS_REGION} s3 sync ~/repo/build s3://${AWS_BUCKET_DEV} --delete
             fi
-      - run:
-            name: Notify fail via telegram
-            command: |
-              curl -X POST \
-              https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
-              -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
-              -d "text=Your build on ${CIRCLE_BRANCH} branch has fail!
-                  author: ${CIRCLE_PROJECT_USERNAME}
-                  project: $CIRCLE_PROJECT_REPONAME
-                  when: $(date +'%m/%d/%Y %T')
-                "
-            when: on_fail
+      - *notify-on-fail
 
   deploy-to-aws-cloudfront:
       executor: app-executor
@@ -165,18 +134,7 @@ jobs:
               else
                 aws cloudfront create-invalidation --distribution-id ${DEV_DISTRIBUTION_ID} --paths /\*
               fi
-        - run:
-            name: Notify fail via telegram
-            command: |
-              curl -X POST \
-              https://api.telegram.org/bot${TELEGRAM_BOT_API_TOKEN}/sendMessage \
-              -d "chat_id=${TELEGRAM_CHANNEL_ID}" \
-              -d "text=Your build on ${CIRCLE_BRANCH} branch has fail!
-                  author: ${CIRCLE_PROJECT_USERNAME}
-                  project: $CIRCLE_PROJECT_REPONAME
-                  when: $(date +'%m/%d/%Y %T')
-                "
-            when: on_fail
+        - *notify-on-fail
 
   notify-success-via-telegram:
       executor: app-executor

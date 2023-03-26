@@ -1,4 +1,4 @@
-import { onCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
+import { zonCLS, onFID, onFCP, onLCP, onTTFB } from 'web-vitals';
 
 const reportWebVitals = (onPerfEntry) => {
   if (onPerfEntry) {
