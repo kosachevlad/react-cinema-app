@@ -139,7 +139,7 @@ jobs:
       - run:
         - telegram/send-message:
           to: $TELEGRAM_CHANNEL_ID # replace with your chat ID
-          message: "Build succeeded!
+          message: "Build succeeded!"
  
 workflows:
   build_and_deploy:
