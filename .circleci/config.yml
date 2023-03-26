@@ -192,18 +192,9 @@ workflows:
       - notify-success-via-telegram:
           requires: []
           filters:
-            when: on_success
             branches:
               only:
                 - develop
                 - staging
                 - main
-      - notify-failure-via-telegram:
-          requires: []
-          filters:
-            when: on_failure
-            branches:
-              only:
-                - develop
-                - staging
-                - main
+     
