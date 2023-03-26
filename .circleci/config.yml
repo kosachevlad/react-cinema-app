@@ -5,6 +5,7 @@ executors:
     docker:
       - image: circleci/node:16.10.0
     working_directory: ~/repo
+    resource_class: small
 
 aliases:
   - &show-current-branch-name
